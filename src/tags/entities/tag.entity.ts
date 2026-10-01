@@ -6,7 +6,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Transaction } from '../../transactions/entities/transaction.entity.js';
+import type { Relation } from 'typeorm';
+import type { Transaction } from '../../transactions/entities/transaction.entity.js';
 
 @Entity('tags')
 export class Tag {
@@ -25,6 +26,6 @@ export class Tag {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Transaction, (transaction) => transaction.tag)
-  transactions: Transaction[];
+  @OneToMany('Transaction', 'tag')
+  transactions: Relation<Transaction[]>;
 }

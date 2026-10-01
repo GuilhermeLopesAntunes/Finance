@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
 import { Tag } from '../../tags/entities/tag.entity.js';
 import { TransactionType } from '../enums/transaction-type.enum.js';
 
@@ -29,7 +30,7 @@ export class Transaction {
 
   @ManyToOne(() => Tag, (tag) => tag.transactions, { eager: false })
   @JoinColumn({ name: 'tagId' })
-  tag: Tag;
+  tag: Relation<Tag>;
 
   @Column({ type: 'datetime' })
   transactedAt: Date;

@@ -33,7 +33,7 @@ export class TagsRepository {
   async hasTransactions(id: string): Promise<boolean> {
     const tag = await this.repo.findOne({
       where: { id },
-      relations: ['transactions'],
+      relations: { transactions: true },
     });
     return (tag?.transactions?.length ?? 0) > 0;
   }

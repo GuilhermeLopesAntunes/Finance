@@ -37,11 +37,17 @@ export class TransactionsRepository {
       );
     }
 
-    return this.repo.find({ where, relations: ['tag'] });
+    const hasFilters = Object.keys(where).length > 0;
+
+    return this.repo.find({
+      ...(hasFilters ? { where } : {}),
+      relations: { tag: true },
+      order: { transactedAt: 'DESC' },
+    });
   }
 
   async findById(id: string): Promise<Transaction | null> {
-    return this.repo.findOne({ where: { id }, relations: ['tag'] });
+    return this.repo.findOne({ where: { id }, relations: { tag: true } });
   }
 
   async delete(id: string): Promise<void> {
