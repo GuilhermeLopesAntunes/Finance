@@ -1,0 +1,53 @@
+services:
+  api:
+    build:
+      context: .
+      target: development
+    container_name: finance-api
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: finance_user
+      DB_PASSWORD: finance_pass
+      DB_NAME: finance_db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - finance-network
+
+  db:
+    image: mysql:8.4
+    container_name: finance-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: finance_db
+      MYSQL_USER: finance_user
+      MYSQL_PASSWORD: finance_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "finance_user", "--password=finance_pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - finance-network
+
+volumes:
+  mysql_data:
+
+networks:
+  finance-network:
+    driver: bridge
