@@ -7,11 +7,13 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { FilterTransactionsDto } from './dto/filter-transactions.dto.js';
+import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
 import { TransactionsService } from './transactions.service.js';
 
 @ApiTags('Transactions')
@@ -42,6 +44,15 @@ export class TransactionsController {
   @ApiResponse({ status: 404, description: 'Transação não encontrada' })
   findOne(@Param('id') id: string) {
     return this.transactionsService.findOne(id);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Atualizar transação' })
+  @ApiResponse({ status: 200, description: 'Transação atualizada' })
+  @ApiResponse({ status: 400, description: 'Tipo inválido ou data mal formatada' })
+  @ApiResponse({ status: 404, description: 'Transação ou tag não encontrada' })
+  update(@Param('id') id: string, @Body() dto: UpdateTransactionDto) {
+    return this.transactionsService.update(id, dto);
   }
 
   @Delete(':id')

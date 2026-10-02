@@ -50,6 +50,10 @@ export class TransactionsRepository {
     return this.repo.findOne({ where: { id }, relations: { tag: true } });
   }
 
+  async update(id: string, data: Partial<Transaction>): Promise<void> {
+    await this.repo.update(id, data);
+  }
+
   async delete(id: string): Promise<void> {
     await this.repo.delete(id);
   }

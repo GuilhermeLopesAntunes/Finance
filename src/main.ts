@@ -7,6 +7,12 @@ async function bootstrap() {
     instrument: ObserveInstrument,
   });
 
+  app.enableCors({
+    origin: ['http://127.0.0.1:5500', 'http://localhost:5500'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Finance API')
     .setDescription('API de gestão financeira com tags e transações')

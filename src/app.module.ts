@@ -4,6 +4,7 @@ import { createObserveModule } from '@nestjs/observe';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { AnalyticsModule } from './analytics/analytics.module.js';
 import { TagsModule } from './tags/tags.module.js';
 import { TransactionsModule } from './transactions/transactions.module.js';
 
@@ -32,6 +33,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
     TagsModule,
     TransactionsModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

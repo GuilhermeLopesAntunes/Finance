@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Finance</h1>
+    <nav>
+      <button class="nav-btn active" data-section="transactions">Transações</button>
+      <button class="nav-btn" data-section="tags">Tags</button>
+      <button class="nav-btn" data-section="analytics">Analytics</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <section id="section-transactions">
+      <div class="section-header">
+        <h2>Transações</h2>
+        <button class="btn btn-primary" id="btn-open-transaction-modal">+ Nova Transação</button>
+      </div>
+
+      <div class="filters">
+        <select id="filter-type">
+          <option value="">Todos os tipos</option>
+          <option value="EXPENSE">Despesa</option>
+          <option value="INCOME">Receita</option>
+        </select>
+        <select id="filter-tag">
+          <option value="">Todas as tags</option>
+        </select>
+        <input type="date" id="filter-start" />
+        <input type="date" id="filter-end" />
+        <button class="btn btn-secondary" id="btn-filter">Filtrar</button>
+        <button class="btn btn-ghost" id="btn-clear-filter">Limpar</button>
+      </div>
+
+      <div id="transactions-list" class="card-list">
+        <p class="empty-state">Carregando...</p>
+      </div>
+    </section>
+
+    <section id="section-tags" class="hidden">
+      <div class="section-header">
+        <h2>Tags</h2>
+        <button class="btn btn-primary" id="btn-open-tag-modal">+ Nova Tag</button>
+      </div>
+      <div id="tags-list" class="card-list">
+        <p class="empty-state">Carregando...</p>
+      </div>
+    </section>
+
+    <section id="section-analytics" class="hidden analytics-section">
+      <div class="analytics-toolbar">
+        <h2>Analytics</h2>
+        <div class="analytics-filters">
+          <input type="date" id="an-start" />
+          <span>até</span>
+          <input type="date" id="an-end" />
+          <select id="an-interval">
+            <option value="day">Por dia</option>
+            <option value="week">Por semana</option>
+            <option value="month" selected>Por mês</option>
+          </select>
+          <select id="an-dist-type">
+            <option value="EXPENSE">Despesas</option>
+            <option value="INCOME">Receitas</option>
+          </select>
+          <button class="btn btn-secondary" id="btn-an-filter">Aplicar</button>
+          <button class="btn btn-ghost" id="btn-an-clear">Limpar</button>
+        </div>
+      </div>
+
+      <div class="summary-cards" id="summary-cards">
+        <div class="stat-card">
+          <span class="stat-label">Receitas</span>
+          <span class="stat-value income" id="an-incomes">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Despesas</span>
+          <span class="stat-value expense" id="an-expenses">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Saldo Líquido</span>
+          <span class="stat-value" id="an-balance">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Taxa de Poupança</span>
+          <span class="stat-value" id="an-savings">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Ticket Médio Gasto</span>
+          <span class="stat-value" id="an-avg-expense">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Ticket Médio Ganho</span>
+          <span class="stat-value" id="an-avg-income">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Total de Transações</span>
+          <span class="stat-value" id="an-count">—</span>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card chart-card--wide">
+          <h3 class="chart-title">Fluxo de Caixa</h3>
+          <canvas id="chart-timeline"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Distribuição por Tag</h3>
+          <div class="donut-wrap">
+            <canvas id="chart-donut"></canvas>
+            <div id="donut-legend" class="donut-legend"></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Gastos por Hora do Dia</h3>
+          <canvas id="chart-hour"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Gastos por Dia da Semana</h3>
+          <canvas id="chart-weekday"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="modal-transaction" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Nova Transação</h3>
+        <button class="modal-close" data-modal="modal-transaction">&times;</button>
+      </div>
+      <form id="form-transaction">
+        <div class="form-group">
+          <label for="tx-description">Descrição</label>
+          <input id="tx-description" type="text" placeholder="Ex: UBER" required />
+        </div>
+        <div class="form-group">
+          <label for="tx-amount">Valor (R$)</label>
+          <input id="tx-amount" type="number" min="0.01" step="0.01" placeholder="Ex: 8.30" required />
+        </div>
+        <div class="form-group">
+          <label for="tx-type">Tipo</label>
+          <select id="tx-type" required>
+            <option value="EXPENSE">Despesa</option>
+            <option value="INCOME">Receita</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="tx-tag">Tag</label>
+          <select id="tx-tag" required></select>
+        </div>
+        <div class="form-group">
+          <label for="tx-date">Data e hora</label>
+          <input id="tx-date" type="datetime-local" required />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost modal-close" data-modal="modal-transaction">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-tag" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Nova Tag</h3>
+        <button class="modal-close" data-modal="modal-tag">&times;</button>
+      </div>
+      <form id="form-tag">
+        <div class="form-group">
+          <label for="tag-name">Nome</label>
+          <input id="tag-name" type="text" placeholder="Ex: Transporte" required />
+        </div>
+        <div class="form-group">
+          <label for="tag-color">Cor</label>
+          <input id="tag-color" type="color" value="#FF5733" required />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost modal-close" data-modal="modal-tag">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script type="module" src="scripts/app.js"></script>
+  <script type="module" src="scripts/analytics.js"></script>
+</body>
+</html>
