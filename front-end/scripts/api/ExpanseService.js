@@ -26,6 +26,19 @@ export async function createTransaction(data) {
   return res.json();
 }
 
+export async function updateTransaction(id, data) {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message ?? 'Erro ao atualizar transação');
+  }
+  return res.json();
+}
+
 export async function deleteTransaction(id) {
   const res = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' });
   if (!res.ok) {

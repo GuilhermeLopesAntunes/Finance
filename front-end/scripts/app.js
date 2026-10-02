@@ -1,5 +1,5 @@
 import { getAllTags, createTag, deleteTag } from './api/TagService.js';
-import { getAllTransactions, createTransaction, deleteTransaction } from './api/ExpanseService.js';
+import { getAllTransactions, createTransaction, updateTransaction, deleteTransaction } from './api/ExpanseService.js';
 
 const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -57,10 +57,12 @@ let cachedTags = [];
 async function loadTagsIntoSelects() {
   cachedTags = await getAllTags();
 
-  const txSelect = document.getElementById('tx-tag');
-  txSelect.innerHTML = cachedTags.length
+  const tagOptions = cachedTags.length
     ? cachedTags.map((t) => `<option value="${t.id}">${t.name}</option>`).join('')
     : '<option value="" disabled>Nenhuma tag cadastrada</option>';
+
+  document.getElementById('tx-tag').innerHTML = tagOptions;
+  document.getElementById('edit-tx-tag').innerHTML = tagOptions;
 
   const filterSelect = document.getElementById('filter-tag');
   filterSelect.innerHTML =
@@ -93,9 +95,25 @@ function renderTransactions(list) {
         <span class="amount ${isExpense ? 'expense' : 'income'}">
           ${isExpense ? '-' : '+'}${centsToBRL(tx.amountInCents)}
         </span>
+        <button class="btn btn-secondary" data-edit-tx="${tx.id}" data-tx='${JSON.stringify({ description: tx.description, amountInCents: tx.amountInCents, type: tx.type, tagId: tx.tagId, transactedAt: tx.transactedAt })}'>Editar</button>
         <button class="btn btn-danger" data-delete-tx="${tx.id}">Excluir</button>
       </div>`;
   }).join('');
+
+  container.querySelectorAll('[data-edit-tx]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tx = JSON.parse(btn.dataset.tx);
+      document.getElementById('edit-tx-id').value = btn.dataset.editTx;
+      document.getElementById('edit-tx-description').value = tx.description;
+      document.getElementById('edit-tx-amount').value = (tx.amountInCents / 100).toFixed(2);
+      document.getElementById('edit-tx-type').value = tx.type;
+      document.getElementById('edit-tx-tag').value = tx.tagId;
+      const localDt = new Date(tx.transactedAt);
+      localDt.setMinutes(localDt.getMinutes() - localDt.getTimezoneOffset());
+      document.getElementById('edit-tx-date').value = localDt.toISOString().slice(0, 16);
+      openModal('modal-edit-transaction');
+    });
+  });
 
   container.querySelectorAll('[data-delete-tx]').forEach((btn) => {
     btn.addEventListener('click', async () => {
@@ -228,6 +246,31 @@ document.getElementById('btn-clear-filter').addEventListener('click', async () =
   document.getElementById('filter-start').value = '';
   document.getElementById('filter-end').value = '';
   await loadTransactions();
+});
+
+document.getElementById('form-edit-transaction').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('edit-tx-id').value;
+  const description = document.getElementById('edit-tx-description').value.trim();
+  const amount = parseFloat(document.getElementById('edit-tx-amount').value);
+  const type = document.getElementById('edit-tx-type').value;
+  const tagId = document.getElementById('edit-tx-tag').value;
+  const date = document.getElementById('edit-tx-date').value;
+
+  try {
+    await updateTransaction(id, {
+      description,
+      amountInCents: Math.round(amount * 100),
+      type,
+      tagId,
+      transactedAt: toISO(date),
+    });
+    closeModal('modal-edit-transaction');
+    showToast('Transação atualizada!');
+    await loadTransactions();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
 });
 
 async function init() {
