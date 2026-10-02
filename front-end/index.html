@@ -197,6 +197,30 @@
     </div>
   </div>
 
+  <div id="modal-edit-tag" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Editar Tag</h3>
+        <button class="modal-close" data-modal="modal-edit-tag">&times;</button>
+      </div>
+      <form id="form-edit-tag">
+        <input type="hidden" id="edit-tag-id" />
+        <div class="form-group">
+          <label for="edit-tag-name">Nome</label>
+          <input id="edit-tag-name" type="text" placeholder="Ex: Transporte" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-tag-color">Cor</label>
+          <input id="edit-tag-color" type="color" required />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost modal-close" data-modal="modal-edit-tag">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="modal-edit-transaction" class="modal-overlay hidden">
     <div class="modal">
       <div class="modal-header">

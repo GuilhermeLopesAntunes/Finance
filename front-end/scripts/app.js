@@ -1,4 +1,4 @@
-import { getAllTags, createTag, deleteTag } from './api/TagService.js';
+import { getAllTags, createTag, updateTag, deleteTag } from './api/TagService.js';
 import { getAllTransactions, createTransaction, updateTransaction, deleteTransaction } from './api/ExpanseService.js';
 
 const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -151,8 +151,18 @@ function renderTags(list) {
         <span class="card-title">${tag.name}</span>
         <span class="card-meta">${tag.colorHex}</span>
       </div>
+      <button class="btn btn-secondary" data-edit-tag="${tag.id}" data-tag-name="${tag.name}" data-tag-color="${tag.colorHex}">Editar</button>
       <button class="btn btn-danger" data-delete-tag="${tag.id}">Excluir</button>
     </div>`).join('');
+
+  container.querySelectorAll('[data-edit-tag]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.getElementById('edit-tag-id').value = btn.dataset.editTag;
+      document.getElementById('edit-tag-name').value = btn.dataset.tagName;
+      document.getElementById('edit-tag-color').value = btn.dataset.tagColor;
+      openModal('modal-edit-tag');
+    });
+  });
 
   container.querySelectorAll('[data-delete-tag]').forEach((btn) => {
     btn.addEventListener('click', async () => {
@@ -246,6 +256,22 @@ document.getElementById('btn-clear-filter').addEventListener('click', async () =
   document.getElementById('filter-start').value = '';
   document.getElementById('filter-end').value = '';
   await loadTransactions();
+});
+
+document.getElementById('form-edit-tag').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('edit-tag-id').value;
+  const name = document.getElementById('edit-tag-name').value.trim();
+  const colorHex = document.getElementById('edit-tag-color').value;
+
+  try {
+    await updateTag(id, { name, colorHex });
+    closeModal('modal-edit-tag');
+    showToast('Tag atualizada!');
+    await loadTags();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
 });
 
 document.getElementById('form-edit-transaction').addEventListener('submit', async (e) => {
